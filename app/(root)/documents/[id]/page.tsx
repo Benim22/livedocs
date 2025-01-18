@@ -13,7 +13,7 @@ interface User {
 }
 
 const Document = async ({ params }: { params: { id: string } }) => {
-  const { id } = params; // Extract id directly from params
+  const { id } = await params; // Extract id directly from params
 
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/sign-in");

@@ -4,20 +4,24 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { parseStringify } from "../utils";
 import { liveblocks } from "../liveblocks";
 
-export const getClerkUsers = async ({ userIds }: { userIds: string[]}) => {
+export const getClerkUsers = async ({ userIds }: { userIds: string[] }) => {
   try {
-    const { data } = await clerkClient.users.getUserList({
-      emailAddress: userIds,
+    // Await the clerkClient function to get the ClerkClient instance
+    const client = await clerkClient();
+
+    // Now that you have the ClerkClient, you can access users
+    const { data } = await client.users.getUserList({
+      emailAddress: userIds, // Ensure the correct field here
     });
 
-    const users = data.map((user) => ({
+    const users = data.map((user: { id: any; firstName: any; lastName: any; emailAddresses: { emailAddress: any; }[]; imageUrl: any; }) => ({
       id: user.id,
       name: `${user.firstName} ${user.lastName}`,
       email: user.emailAddresses[0].emailAddress,
       avatar: user.imageUrl,
     }));
 
-    const sortedUsers = userIds.map((email) => users.find((user) => user.email === email));
+    const sortedUsers = userIds.map((email) => users.find((user: { email: string; }) => user.email === email));
 
     return parseStringify(sortedUsers);
   } catch (error) {
@@ -31,10 +35,10 @@ export const getDocumentUsers = async ({ roomId, currentUser, text }: { roomId: 
 
     const users = Object.keys(room.usersAccesses).filter((email) => email !== currentUser);
 
-    if(text.length) {
+    if (text.length) {
       const lowerCaseText = text.toLowerCase();
 
-      const filteredUsers = users.filter((email: string) => email.toLowerCase().includes(lowerCaseText))
+      const filteredUsers = users.filter((email: string) => email.toLowerCase().includes(lowerCaseText));
 
       return parseStringify(filteredUsers);
     }

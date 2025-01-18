@@ -135,9 +135,8 @@ export const removeCollaborator = async ({ roomId, email }: {roomId: string, ema
 export const deleteDocument = async (roomId: string) => {
   try {
     await liveblocks.deleteRoom(roomId);
-    revalidatePath('/');
-    redirect('/');
+    revalidatePath('/');  // Revalidate the home page, but don't redirect here.
   } catch (error) {
     console.log(`Error happened while deleting a room: ${error}`);
   }
-}
+};
